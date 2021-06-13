@@ -3,8 +3,9 @@ module github.com/Chronostasys/wishlist
 go 1.16
 
 require (
-	github.com/beego/beego/v2 v2.0.1 // indirect
+	github.com/beego/beego/v2 v2.0.2-0.20210531141155-ea87fba943cf // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/devfeel/mapper v0.7.5 // indirect
 	github.com/gin-gonic/gin v1.7.2 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/spec v0.20.3 // indirect
