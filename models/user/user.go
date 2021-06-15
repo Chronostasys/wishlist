@@ -14,7 +14,7 @@ func init() {
 type User struct {
 	primitives.Entity
 	Password string  `json:"password"`
-	Email    string  `json:"email"`
+	Email    string  `json:"email" orm:"unique"`
 	Roles    []*Role `orm:"rel(m2m)"`
 }
 type UserRole struct {

@@ -6,7 +6,10 @@ import (
 	"github.com/Chronostasys/wishlist/services"
 	"github.com/devfeel/mapper"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
+
+type resp map[interface{}]interface{}
 
 type UserController interface {
 	Register(ctx *gin.Context)
@@ -27,10 +30,17 @@ func (uc *userController) Register(ctx *gin.Context) {
 	if err := mapper.Mapper(r, u); err != nil {
 		panic(err)
 	}
-	u.Roles = []*user.Role{{Role: "User"}, {Role: "Test"}}
+	u.Roles = []*user.Role{{Role: "User"}}
+	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		ctx.JSON(400, err)
+		return
+	}
+	u.Password = string(hash)
 	id, err := services.USvc.AddUser(u)
 	if err != nil {
-		panic(err)
+		ctx.JSON(400, err)
+		return
 	}
-	ctx.JSON(200, map[string]int64{"id": id})
+	ctx.JSON(200, resp{"id": id})
 }
