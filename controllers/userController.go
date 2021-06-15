@@ -1,18 +1,17 @@
 package controllers
 
 import (
-	"github.com/Chronostasys/wishlist/dto"
 	"github.com/Chronostasys/wishlist/models/user"
+	"github.com/Chronostasys/wishlist/pkg/ginwrapper"
 	"github.com/Chronostasys/wishlist/services"
 	"github.com/devfeel/mapper"
-	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type resp map[interface{}]interface{}
+type resp map[string]interface{}
 
 type UserController interface {
-	Register(ctx *gin.Context)
+	Register(b ginwrapper.Req) (response interface{}, code int)
 }
 type userController struct {
 }
@@ -20,27 +19,20 @@ type userController struct {
 func NewUserCtr() UserController {
 	return &userController{}
 }
-func (uc *userController) Register(ctx *gin.Context) {
-	r := &dto.Reg{}
-
-	if err := ctx.BindJSON(r); err != nil {
-		panic(err)
-	}
+func (uc *userController) Register(b ginwrapper.Req) (response interface{}, code int) {
 	u := &user.User{}
-	if err := mapper.Mapper(r, u); err != nil {
-		panic(err)
+	if err := mapper.MapperMap(b, u); err != nil {
+		return err, 400
 	}
 	u.Roles = []*user.Role{{Role: "User"}}
 	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
-		ctx.JSON(400, err)
-		return
+		return err, 500
 	}
 	u.Password = string(hash)
 	id, err := services.USvc.AddUser(u)
 	if err != nil {
-		ctx.JSON(400, err)
-		return
+		return err, 400
 	}
-	ctx.JSON(200, resp{"id": id})
+	return resp{"id": id}, 200
 }

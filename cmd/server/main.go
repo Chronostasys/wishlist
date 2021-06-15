@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/Chronostasys/wishlist/controllers"
+	"github.com/Chronostasys/wishlist/pkg/ginwrapper"
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/core/config"
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,7 @@ func main() {
 			"message": "pong",
 		})
 	})
-	r.POST("/adduser", controllers.NewUserCtr().Register)
+	r.POST("/adduser", ginwrapper.JsonWrapper(controllers.NewUserCtr().Register))
 	orm.RunSyncdb("default", false, true)
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
